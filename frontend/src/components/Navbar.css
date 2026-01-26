@@ -1,0 +1,353 @@
+.navbar {
+  background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0;
+  min-height: 100px;
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.8rem 2.5rem;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+  white-space: nowrap;
+}
+
+.logo-icon {
+  font-size: 2rem;
+}
+
+.logo-text {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-categories {
+  position: relative;
+}
+
+.categories-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.categories-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Location Dropdown */
+.navbar-location {
+  position: relative;
+}
+
+.location-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: 180px;
+}
+
+.location-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-icon {
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.location-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  min-width: 280px;
+  max-height: 500px;
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 0.5rem 0;
+}
+
+.location-group {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.location-group:last-child {
+  border-bottom: none;
+}
+
+.location-division {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #2c3e50;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+  border-left: 3px solid transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location-division.all-bangladesh {
+  background: #e8f5e9;
+}
+
+.location-division:hover {
+  background: #e9ecef;
+  border-left-color: #16a085;
+}
+
+.expand-icon {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.location-districts {
+  padding-left: 1rem;
+  background: white;
+}
+
+.location-district {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: #495057;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  border-left: 2px solid transparent;
+}
+
+.location-district:hover {
+  background: #f8f9fa;
+  color: #16a085;
+  border-left-color: #16a085;
+  padding-left: 1.2rem;
+}
+
+.navbar-search {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #95a5a6;
+}
+
+.search-btn {
+  background: #f39c12;
+  border: none;
+  padding: 0 1.5rem;
+  cursor: pointer;
+  color: white;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  background: #e67e22;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lang-switcher {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.lang-switcher:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.action-btn svg {
+  font-size: 1.1rem;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-menu:hover .user-dropdown {
+  display: flex;
+}
+
+.user-dropdown button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  color: #2c3e50;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+.user-dropdown button:hover {
+  background: #f8f9fa;
+}
+
+.post-ad-btn {
+  background: #f39c12;
+  border: none;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.post-ad-btn:hover {
+  background: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+    gap: 1rem;
+  }
+
+  .navbar-search {
+    max-width: 400px;
+  }
+
+  .action-btn span,
+  .categories-btn span {
+    display: none;
+  }
+
+  .logo-text {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .navbar-search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  .navbar-categories {
+    display: none;
+  }
+
+  .lang-switcher {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .post-ad-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+}
