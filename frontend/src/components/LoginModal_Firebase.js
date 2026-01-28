@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { authAPI } from '../services/api';
+import { firebaseAuth } from '../config/firebase';
 import './LoginModal.css';
 
 const LoginModal = ({ isOpen, onClose }) => {
@@ -37,7 +38,58 @@ const LoginModal = ({ isOpen, onClose }) => {
     return regex.test(emailAddress);
   };
 
-  // Handle password-based login/register
+  // Sync Firebase user with backend
+  const syncWithBackend = async (firebaseUser, additionalData = {}) => {
+    try {
+      // Get Firebase ID token
+      const idToken = await firebaseUser.getIdToken();
+      
+      // Register/login on backend
+      const payload = {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: additionalData.name || firebaseUser.displayName || 'User',
+        role: 'buyer',
+        emailVerified: firebaseUser.emailVerified,
+        photoURL: firebaseUser.photoURL,
+        idToken
+      };
+
+      const response = await authAPI.register(payload);
+      
+      if (response.data.success) {
+        login(response.data.user, response.data.token);
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        return true;
+      }
+    } catch (error) {
+      // If user exists, try login
+      if (error.response?.status === 400) {
+        try {
+          const idToken = await firebaseUser.getIdToken();
+          const loginResponse = await authAPI.login({ 
+            email: firebaseUser.email,
+            firebaseUid: firebaseUser.uid,
+            idToken
+          });
+          
+          if (loginResponse.data.success) {
+            login(loginResponse.data.user, loginResponse.data.token);
+            localStorage.setItem('token', loginResponse.data.token);
+            localStorage.setItem('user', JSON.stringify(loginResponse.data.user));
+            return true;
+          }
+        } catch (loginError) {
+          console.error('Backend login error:', loginError);
+          throw loginError;
+        }
+      }
+      throw error;
+    }
+  };
+
+  // Handle password-based registration/login
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -70,50 +122,138 @@ const LoginModal = ({ isOpen, onClose }) => {
 
     setLoading(true);
     try {
-      const response = isRegister 
-        ? await authAPI.register({ name, email, password, role: 'buyer' })
-        : await authAPI.login({ email, password });
-
-      if (response.data.success) {
-        login(response.data.user, response.data.token);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+      if (isRegister) {
+        // Register with Firebase
+        const firebaseUser = await firebaseAuth.registerWithEmail(email, password);
+        
+        // Sync with backend
+        await syncWithBackend(firebaseUser, { name });
         
         toast.success(
           isEnglish 
-            ? (isRegister ? '🎉 Registration successful!' : '👋 Welcome back!') 
-            : (isRegister ? '🎉 সফলভাবে রেজিস্ট্রেশন হয়েছে!' : '👋 স্বাগতম!')
+            ? '🎉 Registration successful! Please verify your email.' 
+            : '🎉 রেজিস্ট্রেশন সফল! Email verify করুন।'
         );
-        handleClose();
+      } else {
+        // Login with Firebase
+        const firebaseUser = await firebaseAuth.loginWithEmail(email, password);
+        
+        // Sync with backend
+        await syncWithBackend(firebaseUser);
+        
+        toast.success(
+          isEnglish 
+            ? '👋 Welcome back!' 
+            : '👋 স্বাগতম!'
+        );
       }
+      
+      handleClose();
     } catch (error) {
       console.error('Auth error:', error);
-      const errorMsg = error.response?.data?.message;
-      toast.error(
-        errorMsg ||
-        (isEnglish ? '❌ Authentication failed. Please try again.' : '❌ লগইন/রেজিস্ট্রেশন ব্যর্থ হয়েছে।')
-      );
+      
+      let errorMessage = '';
+      
+      // Firebase error codes
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = isEnglish 
+          ? 'This email is already registered. Please login.' 
+          : 'এই email already registered। Login করুন।';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = isEnglish 
+          ? 'Incorrect password' 
+          : 'ভুল password';
+      } else if (error.code === 'auth/user-not-found') {
+        errorMessage = isEnglish 
+          ? 'No account found with this email' 
+          : 'এই email এ কোন account নেই';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = isEnglish 
+          ? 'Password is too weak' 
+          : 'Password খুব দুর্বল';
+      } else {
+        errorMessage = error.response?.data?.message || 
+          (isEnglish ? '❌ Authentication failed. Please try again.' : '❌ ব্যর্থ হয়েছে।');
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle Google OAuth
-  const handleGoogleLogin = () => {
-    toast.info(
-      isEnglish 
-        ? 'Google login requires configuration. Please use email/password for now.' 
-        : 'Google লগইন configuration প্রয়োজন। এখন email/password ব্যবহার করুন।'
-    );
+  // Handle Google login
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const firebaseUser = await firebaseAuth.loginWithGoogle();
+      
+      // Sync with backend
+      await syncWithBackend(firebaseUser);
+      
+      toast.success(
+        isEnglish 
+          ? '✅ Logged in with Google!' 
+          : '✅ Google দিয়ে login সফল!'
+      );
+      
+      handleClose();
+    } catch (error) {
+      console.error('Google login error:', error);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.info(
+          isEnglish 
+            ? 'Login cancelled' 
+            : 'Login বাতিল করা হয়েছে'
+        );
+      } else {
+        toast.error(
+          isEnglish 
+            ? '❌ Google login failed' 
+            : '❌ Google login ব্যর্থ'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle Facebook OAuth
-  const handleFacebookLogin = () => {
-    toast.info(
-      isEnglish 
-        ? 'Facebook login requires configuration. Please use email/password for now.' 
-        : 'Facebook লগইন configuration প্রয়োজন। এখন email/password ব্যবহার করুন।'
-    );
+  // Handle Facebook login
+  const handleFacebookLogin = async () => {
+    setLoading(true);
+    try {
+      const firebaseUser = await firebaseAuth.loginWithFacebook();
+      
+      // Sync with backend
+      await syncWithBackend(firebaseUser);
+      
+      toast.success(
+        isEnglish 
+          ? '✅ Logged in with Facebook!' 
+          : '✅ Facebook দিয়ে login সফল!'
+      );
+      
+      handleClose();
+    } catch (error) {
+      console.error('Facebook login error:', error);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.info(
+          isEnglish 
+            ? 'Login cancelled' 
+            : 'Login বাতিল করা হয়েছে'
+        );
+      } else {
+        toast.error(
+          isEnglish 
+            ? '❌ Facebook login failed' 
+            : '❌ Facebook login ব্যর্থ'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -302,7 +442,7 @@ const LoginModal = ({ isOpen, onClose }) => {
               whileTap={{ scale: loading ? 1 : 0.95 }}
             >
               <FaGoogle />
-              <span>{isEnglish ? 'Google' : 'Google দিয়ে লগইন'}</span>
+              <span>{isEnglish ? 'Google' : 'Google দিয়ে'}</span>
             </motion.button>
 
             <motion.button
@@ -313,7 +453,7 @@ const LoginModal = ({ isOpen, onClose }) => {
               whileTap={{ scale: loading ? 1 : 0.95 }}
             >
               <FaFacebook />
-              <span>{isEnglish ? 'Facebook' : 'Facebook দিয়ে লগইন'}</span>
+              <span>{isEnglish ? 'Facebook' : 'Facebook দিয়ে'}</span>
             </motion.button>
           </motion.div>
         </motion.div>
