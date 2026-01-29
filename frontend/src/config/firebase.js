@@ -11,16 +11,16 @@ import {
 } from 'firebase/auth';
 
 // Firebase configuration
-// TODO: Replace with your Firebase project credentials
-// Go to: https://console.firebase.google.com/
-// Create a project → Add app → Web → Copy config
+// Project: TradeNest
+// Project ID: tradenest-1de29
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "YOUR_API_KEY",
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "YOUR_PROJECT_ID",
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "YOUR_SENDER_ID",
-  appId: process.env.REACT_APP_FIREBASE_APP_ID || "YOUR_APP_ID"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyCPgFjEilBFAOlPojmktROW4SuN-iox50s",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "tradenest-1de29.firebaseapp.com",
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "tradenest-1de29",
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "tradenest-1de29.firebasestorage.app",
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "487640794407",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:487640794407:web:920e38abfd9ae2b03c5502",
+  measurementId: "G-N93FHPNV7H"
 };
 
 // Initialize Firebase
