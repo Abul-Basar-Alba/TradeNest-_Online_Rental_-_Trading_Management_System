@@ -12,10 +12,14 @@ const { protect, requireVerified } = require('../middleware/authMiddleware');
 
 // Public routes
 router.get('/', getAllProducts);
+
+// Protected routes - Must come before :id route
+router.get('/my/products', protect, getMyProducts);
+
+// Public routes - :id route comes after specific paths
 router.get('/:id', getProductById);
 
 // Protected routes (requires authentication)
-router.get('/my/products', protect, getMyProducts);
 router.post('/', protect, requireVerified, createProduct);
 router.put('/:id', protect, updateProduct);
 router.delete('/:id', protect, deleteProduct);

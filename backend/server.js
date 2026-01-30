@@ -61,6 +61,9 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 
+// Error Handler Middleware
+const errorHandler = require('./middleware/errorHandler');
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -89,23 +92,16 @@ app.get('/', (req, res) => {
   });
 });
 
-// Error Handling Middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
-
-// 404 Handler
+// 404 Handler - Must be before error handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: 'Route not found'
   });
 });
+
+// Global Error Handler - Must be last
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;

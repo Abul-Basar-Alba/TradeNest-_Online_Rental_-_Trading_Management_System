@@ -170,17 +170,81 @@ exports.verifyOTP = async (req, res) => {
 };
 
 // @desc    Google OAuth callback
-// @route   GET /api/auth/google/callback
+// @route   GET /api/auth/google/callback (Passport)
+// @route   POST /api/auth/google (Firebase)
 // @access  Public
 exports.googleCallback = async (req, res) => {
   try {
-    // User already authenticated by Passport
-    const token = generateToken(req.user._id);
-    
-    // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/success?token=${token}`);
+    // Check if it's a POST request from Firebase
+    if (req.method === 'POST') {
+      const { email, name, firebaseUid, photoURL } = req.body;
+
+      if (!email || !firebaseUid) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email and Firebase UID required'
+        });
+      }
+
+      // Find or create user
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        // Create new user with Firebase UID as password
+        user = await User.create({
+          name: name || 'Google User',
+          email,
+          password: firebaseUid, // Firebase UID as password
+          role: 'buyer',
+          emailVerified: true,
+          isVerified: true,
+          avatar: photoURL || null,
+          googleId: firebaseUid
+        });
+      } else {
+        // Update existing user
+        if (!user.googleId) {
+          user.googleId = firebaseUid;
+          await user.save();
+        }
+      }
+
+      // Generate token
+      const token = generateToken(user._id);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Google login successful',
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+          emailVerified: user.emailVerified
+        }
+      });
+    }
+
+    // For GET request (Passport OAuth flow)
+    if (req.user) {
+      const token = generateToken(req.user._id);
+      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/success?token=${token}`);
+    }
+
+    throw new Error('Authentication failed');
   } catch (error) {
     console.error('Google Callback Error:', error);
+    
+    if (req.method === 'POST') {
+      return res.status(500).json({
+        success: false,
+        message: 'Google authentication failed',
+        error: error.message
+      });
+    }
+    
     res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
   }
 };

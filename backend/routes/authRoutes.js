@@ -17,7 +17,10 @@ router.post('/verify-otp', verifyOTP);
 router.post('/send-email-verification', sendEmailVerification);
 router.get('/verify-email/:token', verifyEmail);
 
-// Google OAuth
+// Google OAuth - For Firebase (POST)
+router.post('/google', googleCallback);
+
+// Google OAuth - For Passport (GET)
 router.get('/google', passport.authenticate('google', { 
   scope: ['profile', 'email'] 
 }));

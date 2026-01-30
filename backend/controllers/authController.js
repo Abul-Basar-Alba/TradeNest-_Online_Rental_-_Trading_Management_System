@@ -15,16 +15,32 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
 
-    // Check if user already exists
+    // 1. Validate required fields
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide name, email, and password'
+      });
+    }
+
+    // 2. Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long'
+      });
+    }
+
+    // 3. Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: 'User with this email already exists'
       });
     }
 
-    // Create user
+    // 4. Create user (password will be hashed automatically by pre-save hook)
     const user = await User.create({
       name,
       email,
@@ -33,15 +49,16 @@ exports.register = async (req, res) => {
       role: role || 'buyer'
     });
 
-    // If role is seller, set verification status to pending
+    // 5. If role is seller, set verification status to pending
     if (user.role === 'seller') {
       user.verificationStatus = 'pending';
       await user.save();
     }
 
-    // Generate token
+    // 6. Generate JWT token
     const token = generateToken(user._id);
 
+    // 7. Send success response
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -49,9 +66,10 @@ exports.register = async (req, res) => {
       user: user.toPublicJSON()
     });
   } catch (error) {
-    res.status(400).json({
+    console.error('Register Error:', error);
+    res.status(500).json({
       success: false,
-      message: 'Registration failed',
+      message: 'Server error during registration',
       error: error.message
     });
   }
@@ -64,7 +82,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
+    // 1. Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -72,27 +90,35 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Find user and include password
+    // 2. Find user and include password field
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid credentials'
       });
     }
 
-    // Check password
+    // 3. Check if password field exists (for OAuth users)
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please login using your OAuth provider (Google/Facebook)'
+      });
+    }
+
+    // 4. Compare passwords using bcrypt
     const isPasswordMatch = await user.comparePassword(password);
 
     if (!isPasswordMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid credentials'
       });
     }
 
-    // Generate token
+    // 5. Generate JWT token
     const token = generateToken(user._id);
 
     res.status(200).json({
