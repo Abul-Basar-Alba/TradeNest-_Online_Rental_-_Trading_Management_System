@@ -57,12 +57,27 @@ exports.getAllProducts = async (req, res) => {
     // Get total count for pagination
     const total = await Product.countDocuments(query);
 
+    // Get category counts
+    const categoryCounts = await Product.aggregate([
+      { $match: { status: 'active', isAvailable: true } },
+      { $group: { _id: '$category', count: { $sum: 1 } } }
+    ]);
+
+    const counts = {};
+    let totalCount = 0;
+    categoryCounts.forEach(item => {
+      counts[item._id] = item.count;
+      totalCount += item.count;
+    });
+    counts.total = totalCount;
+
     res.status(200).json({
       success: true,
       count: products.length,
       total,
       totalPages: Math.ceil(total / limitNum),
       currentPage: pageNum,
+      categoryCounts: counts,
       products
     });
   } catch (error) {

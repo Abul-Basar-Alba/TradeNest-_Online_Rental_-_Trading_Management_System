@@ -67,6 +67,17 @@ const LandingPage = () => {
         </div>
 
         <motion.div
+          className="browse-all"
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        >
+          <Link to="/products" className="browse-btn">
+            সব পণ্য দেখুন
+          </Link>
+        </motion.div>
+
+        <motion.div
           className="features"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

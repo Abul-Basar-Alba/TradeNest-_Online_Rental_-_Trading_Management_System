@@ -267,6 +267,33 @@
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
 }
 
+/* Browse All Button */
+.browse-all {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.browse-btn {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background: white;
+  color: #6366f1;
+  border: 2px solid #6366f1;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+}
+
+.browse-btn:hover {
+  background: #6366f1;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
 .features {
   display: flex;
   justify-content: center;

@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         const response = await authAPI.getMe();
-        setUser(response.data.data.user);
+        setUser(response.data.user);
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -36,24 +36,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
-  const login = async (credentials) => {
-    const response = await authAPI.login(credentials);
-    const { token, user } = response.data.data;
+  const login = (authData) => {
+    const { token, user } = authData;
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
     setIsAuthenticated(true);
-    return response.data;
   };
 
-  const register = async (userData) => {
-    const response = await authAPI.register(userData);
-    const { token, user } = response.data.data;
+  const register = (authData) => {
+    const { token, user } = authData;
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
     setIsAuthenticated(true);
-    return response.data;
   };
 
   const logout = async () => {

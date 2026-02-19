@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
+import ProductsPage from './pages/ProductsPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthSuccess from './pages/AuthSuccess';
@@ -21,13 +22,14 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/products" element={<ProductsPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/auth/success" element={<AuthSuccess />} />
               <Route path="/verify-email/:token" element={<VerifyEmail />} />
-              {/* Rent and Sell pages - to be created */}
-              <Route path="/rent" element={<div style={{padding: '2rem', textAlign: 'center'}}>Rent Marketplace - Coming Soon!</div>} />
-              <Route path="/sell" element={<div style={{padding: '2rem', textAlign: 'center'}}>Sell Marketplace - Coming Soon!</div>} />
+              {/* Rent and Sell pages */}
+              <Route path="/rent" element={<ProductsPage />} />
+              <Route path="/sell" element={<ProductsPage />} />
             </Routes>
             <ToastContainer 
               position="top-right"

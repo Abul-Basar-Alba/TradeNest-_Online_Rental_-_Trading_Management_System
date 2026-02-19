@@ -91,9 +91,10 @@ const LoginModal = ({ isOpen, onClose }) => {
         : await authAPI.login(payload);
 
       if (response.data.success) {
-        login(response.data.user, response.data.token);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        const { token, user } = response.data;
+        login({ token, user });
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         
         toast.success(isEnglish ? (isRegister ? '🎉 Registration successful!' : '👋 Welcome back!') : (isRegister ? '🎉 সফলভাবে রেজিস্ট্রেশন হয়েছে!' : '👋 স্বাগতম!'));
         handleClose();
@@ -135,9 +136,10 @@ const LoginModal = ({ isOpen, onClose }) => {
       }
 
       if (response.data.success) {
-        login(response.data.user, response.data.token);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        const { token, user } = response.data;
+        login({ token, user });
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         
         toast.success(isEnglish ? '✅ Logged in with Google!' : '✅ Google দিয়ে login সফল!');
         handleClose();
