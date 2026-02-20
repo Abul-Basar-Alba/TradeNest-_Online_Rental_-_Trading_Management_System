@@ -2,7 +2,8 @@
   "name": "tradenest-server",
   "version": "1.0.0",
   "description": "TradeNest Backend API - Online Rental & Trading Management System",
-  "main": "server.js",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
     "start1": "node index.js",
     "start": "node server.js",
@@ -42,6 +43,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
-  },
-  "type": "commonjs"
+  }
 }

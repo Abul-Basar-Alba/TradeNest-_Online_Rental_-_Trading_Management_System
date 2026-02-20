@@ -126,17 +126,10 @@ const Navbar = () => {
 
           {/* Login/User */}
           {isAuthenticated ? (
-            <div className="user-menu">
-              <button className="action-btn">
-                <FaUser />
-                <span>{user?.name}</span>
-              </button>
-              <div className="user-dropdown">
-                <button onClick={() => navigate('/profile')}>Profile</button>
-                <button onClick={() => navigate('/my-ads')}>My Ads</button>
-                <button onClick={handleLogout}>Logout</button>
-              </div>
-            </div>
+            <button className="action-btn" onClick={() => navigate('/profile/my-ads')}>
+              <FaUser />
+              <span>{user?.name || 'User'}</span>
+            </button>
           ) : (
             <button className="action-btn" onClick={() => setShowLoginModal(true)}>
               <FaUser />
@@ -147,7 +140,7 @@ const Navbar = () => {
           {/* Post Ad Button */}
           <button
             className="post-ad-btn"
-            onClick={() => isAuthenticated ? navigate('/post-ad') : setShowLoginModal(true)}
+            onClick={() => isAuthenticated ? navigate('/dashboard/create') : setShowLoginModal(true)}
           >
             {t('postAd')}
           </button>
