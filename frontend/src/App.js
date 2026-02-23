@@ -23,6 +23,7 @@ import ProfileSettings from './pages/ProfileSettings';
 import PhoneVerification from './pages/PhoneVerification';
 import EditProfile from './pages/EditProfile';
 import ProfileVerify from './pages/ProfileVerify';
+import TestLogin from './pages/TestLogin';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/create" element={<CreateProduct />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/test-login" element={<TestLogin />} />
               <Route path="/register" element={<Register />} />
               <Route path="/auth/success" element={<AuthSuccess />} />
               <Route path="/verify-email/:token" element={<VerifyEmail />} />

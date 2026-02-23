@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { authAPI } from '../services/api';
 import { toast } from 'react-toastify';
 import './Auth.css';
 
@@ -27,10 +28,21 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(formData);
+      // Call API to login
+      const response = await authAPI.login(formData);
+      
+      console.log('Login response:', response.data);
+      
+      // Extract token and user from response
+      const { token, user } = response.data;
+      
+      // Save to context and localStorage
+      login({ token, user });
+      
       toast.success('Login successful!');
       navigate('/');
     } catch (error) {
+      console.error('Login error:', error);
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);

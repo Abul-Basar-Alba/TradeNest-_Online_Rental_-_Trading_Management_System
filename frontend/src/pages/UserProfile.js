@@ -10,7 +10,6 @@ import {
   FaPhone, 
   FaUser,
   FaCheckCircle,
-  FaComments,
   FaSignOutAlt
 } from 'react-icons/fa';
 import './UserProfile.css';
@@ -20,23 +19,45 @@ const UserProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Check token from localStorage directly - most reliable
+  const hasToken = () => {
+    const token = localStorage.getItem('token');
+    console.log('UserProfile - checking token:', token ? 'Token exists' : 'No token');
+    console.log('UserProfile - isAuthenticated:', isAuthenticated);
+    console.log('UserProfile - loading:', loading);
+    console.log('UserProfile - user:', user);
+    return !!token;
+  };
+
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate('/login');
+    // Only redirect if we're sure there's no token and loading is done
+    if (!loading && !isAuthenticated && !hasToken()) {
+      console.log('No authentication found, redirecting to login');
+      navigate('/login', { replace: true });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, loading, navigate]);
 
+  // Show loading
   if (loading) {
     return (
       <div className="user-profile-page">
-        <div className="loading-container">
-          <div className="loading-spinner">লোড হচ্ছে...</div>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '100vh',
+          fontSize: '18px',
+          color: '#666'
+        }}>
+          লোড হচ্ছে...
         </div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
+  // Allow access if token exists, even if isAuthenticated hasn't updated yet
+  if (!hasToken()) {
     return null;
   }
 
